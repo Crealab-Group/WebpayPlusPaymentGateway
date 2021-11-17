@@ -27,7 +27,7 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
         $paymentModel = $payment->getPersistentData();
         $WPPPayment = WebpayPlusPayment::fromPayment($paymentModel);
         $payment->beforeProcess($WPPPayment);
-        $response = Transaction::create($WPPPayment->buy_order, $paymentModel->id, ($payment->amount - $payment->discount), $this->returnUrl);
+        $response = (new Transaction)->create($WPPPayment->buy_order, $paymentModel->id, ($payment->amount - $payment->discount), $this->returnUrl);
         $WPPPayment->submit_url = $response->getUrl();
         $WPPPayment->token_ws = $response->getToken();
         $WPPPayment->payment_id = $paymentModel->id;
@@ -47,7 +47,7 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
 
     private function commitTransaction(WebpayPlusPayment $WPPPayment){
         try {
-            $response = Transaction::commit($WPPPayment->token_ws);
+            $response = (new Transaction)->commit($WPPPayment->token_ws);
             if($response->getResponseCode() != 0){
                 $WPPPayment->payment->setStatus('rejected');
             }else {
@@ -64,7 +64,7 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
 
     public function refund($payment, int $amount){
         //TODO Verificar que no tiene mas de 7 dias xd
-        return Transaction::refund($payment->token_ws, $amount);
+        return (new Transaction)->refund($payment->token_ws, $amount);
     }
 
     private function saveWebpayTransactionData($WPPPayment, $webpayResponse){
