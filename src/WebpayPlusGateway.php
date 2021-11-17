@@ -4,7 +4,7 @@ namespace Crealab\WebpayPlusPaymentGateway;
 
 use Crealab\PaymentGateway\Payment;
 use Crealab\PaymentGateway\Contracts\PaymentGatewayInterface;
-use Crealab\PaymentGateway\Gateways\WebpayPlus\Models\WebpayPlusPayment;
+use Crealab\WebpayPlusPaymentGateway\Models\WebpayPlusPayment;
 use Exception;
 use Transbank\Webpay\Configuration;
 use Illuminate\Support\Facades\DB;
