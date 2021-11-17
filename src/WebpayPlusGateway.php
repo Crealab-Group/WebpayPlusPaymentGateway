@@ -6,9 +6,9 @@ use Crealab\PaymentGateway\Payment;
 use Crealab\PaymentGateway\Contracts\PaymentGatewayInterface;
 use Crealab\WebpayPlusPaymentGateway\Models\WebpayPlusPayment;
 use Exception;
-use Transbank\Webpay\Configuration;
 use Illuminate\Support\Facades\DB;
 use Transbank\Webpay\WebpayPlus\Transaction;
+use Transbank\Webpay\WebpayPlus;
 
 class WebpayPlusGateway implements PaymentGatewayInterface{
     private $returnUrl;
@@ -18,10 +18,8 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
     public function __construct(){
         $this->returnUrl = config('webpay.WEBPAY_RETURN_URL');
         $this->isTesting = config('webpay.WEBPAY_TESTING');
-        if($this->isTesting){
-            $this->configuration = Configuration::forTestingWebpayPlusNormal();
-        }else{;
-            $this->configuration = $this->readProductionConfiguration();
+        if(!$this->isTesting){
+            WebpayPlus::configureForProduction( config('webpay.WEBPAY_COMMERCE_CODE'), config('webpay.WEBPAY_API_KEY'));
         }
     }
 
@@ -99,34 +97,4 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
         return $gateway->$method(...$arguments);
     }
 
-    private function readProductionConfiguration(){
-        $config = new Configuration();
-        $config->setEnvironment("PRODUCCION");
-
-        $key            = $this->readCert( config('webpay.WEBPAY_APP_KEY_PATH') );
-        $cert           = $this->readCert( config('webpay.WEBPAY_APP_CERT_PATH') );
-        $webpayCert     = $this->readCert( config('webpay.WEBPAY_CERT_PATH') );
-
-        $config->setPrivateKey($key);
-        $config->setPublicCert($cert);
-        $config->setCommerceCode( config('webpay.WEBPAY_COMMERCE_CODE') );
-        $config->setWebpayCert($webpayCert);
-        return $config;
-    }
-
-    private function readCert($url){
-        $cert="";
-        $cont=0;
-        $certFile=file($url);
-        $max=count($certFile);
-        foreach($certFile as $line) {
-            $cont++;
-            if($cont<$max){
-                $cert=$cert.trim($line)."\n";
-            }else{
-                $cert=$cert.trim($line);
-            }
-        }
-        return $cert;
-    }
 }
