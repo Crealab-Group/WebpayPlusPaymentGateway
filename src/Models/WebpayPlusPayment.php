@@ -18,7 +18,7 @@ class WebpayPlusPayment extends GatewayPayment {
         $data = new self([
             'amount'    => ($payment->amount - $payment->discount),
             'buy_order' => self::generateBuyOrder(),
-            'return_url'=> config('webpay.WEBPAY_RETURN_URL'),
+            'return_url'=> config('webpay.RETURN_URL'),
         ]);
         $data->save();
         return $data;
