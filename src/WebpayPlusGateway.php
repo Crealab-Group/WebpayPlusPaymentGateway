@@ -13,13 +13,12 @@ use Transbank\Webpay\WebpayPlus;
 class WebpayPlusGateway implements PaymentGatewayInterface{
     private $returnUrl;
     private $isTesting;
-    private $configuration;
 
     public function __construct(){
-        $this->returnUrl = config('webpay.WEBPAY_RETURN_URL');
-        $this->isTesting = config('webpay.WEBPAY_TESTING');
+        $this->returnUrl = config('webpay.RETURN_URL');
+        $this->isTesting = config('webpay.TESTING');
         if(!$this->isTesting){
-            WebpayPlus::configureForProduction( config('webpay.WEBPAY_COMMERCE_CODE'), config('webpay.WEBPAY_API_KEY'));
+            WebpayPlus::configureForProduction( config('webpay.COMMERCE_CODE'), config('webpay.PI_KEY'));
         }
     }
 
