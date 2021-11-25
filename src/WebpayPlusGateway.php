@@ -26,7 +26,7 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
         $paymentModel = $payment->getPersistentData();
         $WPPPayment = WebpayPlusPayment::fromPayment($paymentModel);
         $payment->beforeProcess($WPPPayment);
-        $response = (new Transaction)->create($WPPPayment->buy_order, $paymentModel->id, ($payment->amount - $payment->discount), $this->returnUrl);
+        $response = (new Transaction)->create($WPPPayment->buy_order, $paymentModel->id, ($payment->amount - $payment->discount), url($this->returnUrl) );
         $WPPPayment->submit_url = $response->getUrl();
         $WPPPayment->token_ws = $response->getToken();
         $WPPPayment->payment_id = $paymentModel->id;
