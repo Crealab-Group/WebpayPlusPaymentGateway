@@ -27,7 +27,7 @@ class CreateWebpayPlusGatewayTables extends Migration
             $table->string('buy_order');
             $table->text('submit_url')->nullable()->default(null);
             $table->text('return_url');
-            $table->string('token_ws')->nullable();
+            $table->string('token_ws')->index()->nullable();
             $table->string('authorization_code')->nullable();
             $table->string('card_number')->default('0000');
             $table->string('card_expiration')->nullable()->default(null);
