@@ -14,6 +14,10 @@ class WebpayPlusPayment extends GatewayPayment {
         return [$this->amount, $this->buy_order, $this->id, $this->return_url, $this->final_url];
     }
 
+    public function webpayPaymentType(){
+        return $this->belongsTo(WebpayPlusPaymentType::class);
+    }
+
     public static function fromPayment(PaymentModel $payment){
         $data = new self([
             'amount'    => ($payment->amount - $payment->discount),
