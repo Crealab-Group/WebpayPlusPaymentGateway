@@ -6,6 +6,7 @@ use Crealab\PaymentGateway\Payment;
 use Crealab\PaymentGateway\Contracts\PaymentGatewayInterface;
 use Crealab\WebpayPlusPaymentGateway\Models\WebpayPlusPayment;
 use Exception;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 use Transbank\Webpay\WebpayPlus\Transaction;
 use Transbank\Webpay\WebpayPlus;
@@ -13,6 +14,7 @@ use Transbank\Webpay\WebpayPlus;
 class WebpayPlusGateway implements PaymentGatewayInterface{
     private $returnUrl;
     private $isTesting;
+    private const MAX_REFUND_DAYS = 7;
 
     public function __construct(){
         $this->returnUrl = config('webpay.RETURN_URL');
@@ -34,14 +36,26 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
         return $WPPPayment;
     }
 
-    public function showPayment(){
+    private function findTokenOnRequest(){
         $request = request();
-        $token = isset($request->TBK_TOKEN) ? $request->TBK_TOKEN : $request->token_ws;
+        return  $request->TBK_TOKEN ?? $request->token_ws;
+    }
+
+    public function showPayment($token = null){
+        $token = is_null($token) ? $this->findTokenOnRequest() : $token;
         $WPPPayment = WebpayPlusPayment::where('token_ws', $token)->first();
         if($WPPPayment->payment->payment_status_id == 1){ //no esta resuelta
             $this->commitTransaction($WPPPayment);
         }
         return $WPPPayment;
+    }
+
+    public function captureTransacation($token, $amount){
+        $WPPPayment = WebpayPlusPayment::where('token_ws', $token)->first();
+        if($WPPPayment->amount <= $amount){
+            throw new Exception("The captured amount can't be greater than the transaction amount");
+        }
+        return (new Transaction)->capture($token, $WPPPayment->buy_order, $WPPPayment->authorization_code, $amount);
     }
 
     private function commitTransaction(WebpayPlusPayment $WPPPayment){
@@ -54,15 +68,15 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
                 $WPPPayment->payment->recreatePayment()->afterProcess($WPPPayment);
             }
             $this->saveWebpayTransactionData($WPPPayment, $response);
-        } catch (\Throwable $th) {
+        } catch (\Throwable $th) { //Manejar error
             $WPPPayment->payment->setStatus('rejected');
         }
     }
 
-
-
     public function refund($payment, int $amount){
-        //TODO Verificar que no tiene mas de 7 dias xd
+        if((new DateTime($payment->created_at))->diff(new DateTime())->days > self::MAX_REFUND_DAYS){
+            throw new Exception("This payment cannot be refund");
+        }
         return (new Transaction)->refund($payment->token_ws, $amount);
     }
 
@@ -80,20 +94,4 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
         $WPPPayment->webpay_payment_type_id = DB::table('webpay_payment_type')->where('key', $webpayResponse->getPaymentTypeCode())->first(['id'])->id;
         $WPPPayment->save();
     }
-
-    public static function __callStatic($name, $arguments)
-    {
-        $staticCallMap = [
-            'makeCharge' => 'charge',
-            'findPayment'=> 'showPayment',
-            'makeRefund' => 'refund'
-        ];
-        if( !array_key_exists($name, $staticCallMap) ){
-            throw new Exception('Method not found exception');
-        }
-        $gateway  = new self();
-        $method = $staticCallMap[$name];
-        return $gateway->$method(...$arguments);
-    }
-
 }
