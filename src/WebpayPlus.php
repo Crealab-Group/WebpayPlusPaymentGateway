@@ -15,6 +15,6 @@ class WebpayPlus{
     public static function __callStatic($method, $parameters)
     {
         $instance = new static;
-        return call_user_func( [$instance, $method], $parameters );
+        return call_user_func( [$instance, $method], ...$parameters );
     }
 }
