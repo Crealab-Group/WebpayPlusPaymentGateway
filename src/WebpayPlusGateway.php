@@ -17,14 +17,14 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
     private const MAX_REFUND_DAYS = 7;
 
     public function __construct(){
-        $this->returnUrl = config('webpay.RETURN_URL');
-        $this->isTesting = config('webpay.TESTING');
+        $this->returnUrl = config('webpay.plus.return_url');
+        $this->isTesting = config('webpay.plus.testing');
         if(!$this->isTesting){
-            WebpayPlus::configureForProduction( config('webpay.COMMERCE_CODE'), config('webpay.PI_KEY'));
+            WebpayPlus::configureForProduction( config('webpay.plus.commerce_code'), config('webpay.api_key'));
         }
     }
 
-    public function charge(Payment $payment){
+    public function charge($payment){
         $paymentModel = $payment->getPersistentData();
         $WPPPayment = WebpayPlusPayment::fromPayment($paymentModel);
         $payment->beforeProcess($WPPPayment);
@@ -41,10 +41,10 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
         return  $request->TBK_TOKEN ?? $request->token_ws;
     }
 
-    public function showPayment($token = null){
+    public function findPayment($token = null):Payment{
         $token = is_null($token) ? $this->findTokenOnRequest() : $token;
         $WPPPayment = WebpayPlusPayment::where('token_ws', $token)->first();
-        if($WPPPayment->payment->payment_status_id == 1){ //no esta resuelta
+        if($WPPPayment->payment->isPending()){ 
             $this->commitTransaction($WPPPayment);
         }
         return $WPPPayment;
@@ -52,7 +52,7 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
 
     public function captureTransacation($token, $amount){
         $WPPPayment = WebpayPlusPayment::where('token_ws', $token)->first();
-        if($WPPPayment->amount <= $amount){
+        if($WPPPayment->amount < $amount){
             throw new Exception("The captured amount can't be greater than the transaction amount");
         }
         return (new Transaction)->capture($token, $WPPPayment->buy_order, $WPPPayment->authorization_code, $amount);
@@ -90,7 +90,7 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
 
         $WPPPayment->authorization_code = $webpayResponse->getAuthorizationCode();
         $WPPPayment->card_number = isset($cardDetail['card_number']) ? $cardDetail['card_number'] : 0000;
-        $WPPPayment->card_expiration =  isset($cardDetail->cardExpirationDate) ? $cardDetail->cardExpirationDate : NULL ; //no estoy seguro de que este llegando hmm
+        $WPPPayment->card_expiration =  isset($cardDetail->cardExpirationDate) ? $cardDetail->cardExpirationDate : NULL ; 
         $WPPPayment->webpay_payment_type_id = DB::table('webpay_payment_type')->where('key', $webpayResponse->getPaymentTypeCode())->first(['id'])->id;
         $WPPPayment->save();
     }

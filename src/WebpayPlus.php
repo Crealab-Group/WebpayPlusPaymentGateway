@@ -11,6 +11,7 @@ class WebpayPlus{
         return (new WebpayPlusGateway)->$method(...$parameters);
     }
 
+    
 
     public static function __callStatic($method, $parameters)
     {

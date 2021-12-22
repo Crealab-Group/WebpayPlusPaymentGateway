@@ -22,14 +22,13 @@ class WebpayPlusPayment extends GatewayPayment {
         $data = new self([
             'amount'    => ($payment->amount - $payment->discount),
             'buy_order' => self::generateBuyOrder(),
-            'return_url'=> config('webpay.RETURN_URL'),
+            'return_url'=> config('webpay.plus.return_url'),
         ]);
         $data->save();
         return $data;
     }
 
     private static function generateBuyOrder(){
-        $date = date("dmYhi");
-        return 'WPP-'.$date;
+        return 'WP-'.date("dmYhi");
     }
 }

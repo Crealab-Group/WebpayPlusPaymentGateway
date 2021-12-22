@@ -1,8 +1,15 @@
 <?php
 
 return [
-    'RETURN_URL'     => env('WEBPAY_RETURN_URL', '/webpay'),
-    'TESTING'        => env('WEBPAY_TESTING', true),
-    'API_KEY'        => env('WEBPAY_APP_KEY_PATH', null),
-    'COMMERCE_CODE'  => env('WEBPAY_COMMERCE_CODE', null)
+    'api_key'            => env('WEBPAY_API_KEY', null),
+    'plus' => [
+        'return_url'     => env('WEBPAY_PLUS_RETURN_URL', '/webpay'),
+        'debug'          => env('WEBPAY_PLUS_DEBUG', true),
+        'commerce_code'  => env('WEBPAY_PLUS_COMMERCE_CODE', null)
+    ],
+    'mall' => [
+        'return_url'     => env('WEBPAY_MALL_RETURN_URL', '/webpay-mall'),
+        'debug'          => env('WEBPAY_PLUS_DEBUG', true),
+        'commerce_code'  => env('WEBPAY_PLUS_COMMERCE_CODE', null)
+    ]
 ];
