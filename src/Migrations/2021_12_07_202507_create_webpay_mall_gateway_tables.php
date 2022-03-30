@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-class CreateWebpayPlusGatewayTables extends Migration
+class CreateWebpayMallGatewayTables extends Migration
 {
     /**
      * Run the migrations.
