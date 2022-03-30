@@ -40,8 +40,8 @@ class CreateWebpayMallGatewayTables extends Migration
             $table->bigInteger('webpay_payment_type_id')->unsigned()->nullable();
             $table->foreign('webpay_payment_type_id', 'wp_type_foreign')->references('id')->on('webpay_payment_type')->onDelete('CASCADE')->onUpdate('CASCADE');
 
-            $table->bigInteger('webpay_plus_mall_payment_id')->unsigned()->nullable();
-            $table->foreign('webpay_plus_mall_payment_id', 'wp_payment_foreign')->references('id')->on('webpay_plus_mall_payment')->onDelete('CASCADE')->onUpdate('CASCADE');
+            $table->bigInteger('webpay_mall_payment_id')->unsigned()->nullable();
+            $table->foreign('webpay_mall_payment_id', 'wp_payment_foreign')->references('id')->on('webpay_mall_payment')->onDelete('CASCADE')->onUpdate('CASCADE');
 
             $table->timestamps();
         });
