@@ -40,7 +40,7 @@ class WebpayMallGateway implements PaymentGatewayInterface{
         ]);
         $WMPayment->subTransactions()->saveMany($this->getSubTransactions($payment));
         $payment->beforeProcess($WMPayment);
-        $response = (new MallTransaction)->create($WMPayment->buy_order, $paymentModel->id, $WMPayment->amount, url($this->returnUrl) , $payment->detail );
+        $response = (new MallTransaction)->create($WMPayment->buy_order, $paymentModel->id, url($this->returnUrl) , $payment->detail );
         $WMPayment->submit_url = $response->getUrl();
         $WMPayment->token_ws = $response->getToken();
         $WMPayment->payment_id = $paymentModel->id;
