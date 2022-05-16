@@ -36,7 +36,7 @@ class WebpayMallGateway implements PaymentGatewayInterface{
         $WMPayment = new WebpayMallPayment([
             'amount'    => ($payment->amount - $payment->discount),
             'buy_order' => $payment->buyOrder(),
-            'return_url'=> config('webpay.plus.return_url'),
+            'return_url'=> config('webpay.mall.return_url'),
         ]);
         $WMPayment->subTransactions()->saveMany($this->getSubTransactions($payment));
         $payment->beforeProcess($WMPayment);

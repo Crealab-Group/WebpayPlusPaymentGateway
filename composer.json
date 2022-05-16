@@ -17,7 +17,7 @@
         "illuminate/console": "^5.5|^6.0|^7.0|^8.0",
         "guzzlehttp/guzzle": "^7.0",
         "transbank/transbank-sdk": "^2.0",
-        "crealab/payment-gateways": "*"
+        "crealab/payment-gateways": "dev-main"
     },
     "extra": {
         "laravel": {
