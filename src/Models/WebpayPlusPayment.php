@@ -4,8 +4,10 @@ namespace Crealab\WebpayPlusPaymentGateway\Models;
 
 use Crealab\PaymentGateway\Models\GatewayPayment;
 use Crealab\PaymentGateway\Models\PaymentModel;
+use Crealab\PaymentGateway\Models\Util\BelongsToPayment;
 
 class WebpayPlusPayment extends GatewayPayment {
+    use BelongsToPayment;
     protected $table = 'webpay_plus_payment';
 
     protected $fillable = ['amount', 'buy_order', 'return_url', 'final_url','discount'];

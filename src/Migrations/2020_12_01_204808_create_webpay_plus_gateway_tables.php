@@ -33,8 +33,6 @@ class CreateWebpayPlusGatewayTables extends Migration
             $table->string('card_expiration')->nullable()->default(null);
             $table->bigInteger('webpay_payment_type_id')->unsigned()->nullable();
             $table->foreign('webpay_payment_type_id')->references('id')->on('webpay_payment_type')->onDelete('CASCADE')->onUpdate('CASCADE');;
-            $table->bigInteger('payment_id')->unsigned()->nullable();
-            $table->foreign('payment_id')->references('id')->on('payment')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->timestamps();
         });
 

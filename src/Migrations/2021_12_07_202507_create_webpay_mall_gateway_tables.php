@@ -24,8 +24,6 @@ class CreateWebpayMallGatewayTables extends Migration
             $table->string('token_ws')->index()->nullable();
             $table->string('card_number')->default('0000');
             $table->string('card_expiration')->nullable()->default(null);
-            $table->bigInteger('payment_id')->unsigned()->nullable();
-            $table->foreign('payment_id')->references('id')->on('payment')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->timestamps();
         });
 
