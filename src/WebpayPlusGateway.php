@@ -41,9 +41,12 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
         return  $request->TBK_TOKEN ?? $request->token_ws;
     }
 
-    public function findPayment($token = null):PaymentModel{
-        $token = is_null($token) ? $this->findTokenOnRequest() : $token;
+    public function findPayment($uid = null):PaymentModel{
+        $token = is_null($uid) ? $this->findTokenOnRequest() : $uid;
         $WPPPayment = WebpayPlusPayment::where('token_ws', $token)->first();
+        if(is_null($WPPPayment)){
+            throw new Exception("Webpay Mall Payment nor found");
+        }
         if($WPPPayment->payment->isPending()){ 
             $this->commitTransaction($WPPPayment);
         }
