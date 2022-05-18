@@ -28,10 +28,12 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
     public function charge($payment){
         $paymentModel = $payment->getPersistentData();
         $WPPPayment = WebpayPlusPayment::fromPayment($paymentModel);
+        $WPPPayment->save();
         $payment->beforeProcess($WPPPayment);
         $response = (new Transaction)->create($WPPPayment->buy_order, $paymentModel->id, ($payment->amount - $payment->discount), url($this->returnUrl) );
         $WPPPayment->submit_url = $response->getUrl();
         $WPPPayment->token_ws = $response->getToken();
+        $WPPPayment->save();
         $paymentModel->implementation()->associate($WPPPayment)->save();
         return $WPPPayment;
     }
