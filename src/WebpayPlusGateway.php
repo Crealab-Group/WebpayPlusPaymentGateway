@@ -10,6 +10,7 @@ use DateTime;
 use Illuminate\Support\Facades\DB;
 use Transbank\Webpay\WebpayPlus\Transaction;
 use Transbank\Webpay\WebpayPlus;
+use Crealab\PaymentGateway\Models\PaymentModel;
 
 class WebpayPlusGateway implements PaymentGatewayInterface{
     private $returnUrl;
@@ -40,13 +41,13 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
         return  $request->TBK_TOKEN ?? $request->token_ws;
     }
 
-    public function findPayment($token = null):Payment{
+    public function findPayment($token = null):PaymentModel{
         $token = is_null($token) ? $this->findTokenOnRequest() : $token;
         $WPPPayment = WebpayPlusPayment::where('token_ws', $token)->first();
         if($WPPPayment->payment->isPending()){ 
             $this->commitTransaction($WPPPayment);
         }
-        return $WPPPayment;
+        return $WPPPayment->payment;
     }
 
     public function captureTransacation($token, $amount){

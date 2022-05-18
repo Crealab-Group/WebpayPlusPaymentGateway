@@ -8,6 +8,7 @@ use Crealab\WebpayPlusPaymentGateway\Models\WebpayMallPayment;
 use Crealab\WebpayPlusPaymentGateway\Models\WebpayMallSubTransaction;
 use Illuminate\Support\Facades\DB;
 use Crealab\PaymentGateway\Payment;
+use Crealab\PaymentGateway\Models\PaymentModel;
 use DateTime;
 use Exception;
 
@@ -52,7 +53,7 @@ class WebpayMallGateway implements PaymentGatewayInterface{
         return  $request->TBK_TOKEN ?? $request->token_ws;
     }
 
-    public function findPayment($token = null):Payment{
+    public function findPayment($token = null):PaymentModel{
         $token = is_null($token) ? $this->findTokenOnRequest() : $token;
         $WMPayment = WebpayMallPayment::where('token_ws', $token)->first();
         if($WMPayment->payment->isPending()){ 
@@ -60,7 +61,7 @@ class WebpayMallGateway implements PaymentGatewayInterface{
         }else{
             $WMPayment = $this->updateWebpayTransactionData($WMPayment, (new MallTransaction)->status($token));
         }
-        return $WMPayment;
+        return $WMPayment->payment;
     }
 
     private function commitTransaction(WebpayMallPayment $WMPayment){
