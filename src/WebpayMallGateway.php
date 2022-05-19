@@ -95,7 +95,8 @@ class WebpayMallGateway implements PaymentGatewayInterface{
             $subTransaction->amount = $detail->getAmount();
             $subTransaction->authorization_code = $detail->getAuthorizationCode();
             $subTransaction->payment_fees = $detail->getInstallmentsNumber();
-            $subTransaction->webpay_payment_type_id = DB::table('webpay_payment_type')->where('key', $detail->getPaymentTypeCode())->first(['id'])->id;
+            $type= DB::table('webpay_payment_type')->where('key', $detail->getPaymentTypeCode())->first(['id']);
+            $subTransaction->webpay_payment_type_id = isset($type) ? $type->id : null;
             $subTransaction->response_code = $detail->getResponseCode();
         }
         $response->isApproved() ? $WMPayment->payment->setStatus('accepted'): $WMPayment->payment->setStatus('rejected'); 
