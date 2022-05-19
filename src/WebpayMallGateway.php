@@ -78,9 +78,6 @@ class WebpayMallGateway implements PaymentGatewayInterface{
             }
         } catch (\Throwable $th) { //Manejar error
             $WMPayment->payment->setStatus('rejected');
-            $WMPayment->subTransactions->each(function($subtransaction){
-                $subtransaction->setStatus('rejected');
-            });
         }
     }
 
