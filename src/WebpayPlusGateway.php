@@ -19,7 +19,7 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
 
     public function __construct(){
         $this->returnUrl = config('webpay.plus.return_url');
-        $this->isTesting = config('webpay.plus.testing');
+        $this->isTesting = config('webpay.plus.debug');
         if(!$this->isTesting){
             WebpayPlus::configureForProduction( config('webpay.plus.commerce_code'), config('webpay.api_key'));
         }
