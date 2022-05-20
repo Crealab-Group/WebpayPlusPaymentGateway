@@ -29,7 +29,7 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
         $paymentModel = $payment->getPersistentData();
         $WPPPayment = WebpayPlusPayment::fromPayment($paymentModel);
         $WPPPayment->save();
-        $payment->beforeProcess($WPPPayment);
+        $payment->beforeProcess($paymentModel);
         $response = (new Transaction)->create($WPPPayment->buy_order, $paymentModel->id, ($payment->amount - $payment->discount), url($this->returnUrl) );
         $WPPPayment->submit_url = $response->getUrl();
         $WPPPayment->token_ws = $response->getToken();
@@ -70,7 +70,7 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
                 $WPPPayment->payment->setStatus('rejected');
             }else {
                 $WPPPayment->payment->setStatus('accepted');
-                $WPPPayment->payment->recreatePayment()->afterProcess($WPPPayment);
+                $WPPPayment->payment->recreatePayment()->afterProcess($WPPPayment->payment);
             }
             $this->saveWebpayTransactionData($WPPPayment, $response);
         } catch (\Throwable $th) { //Manejar error

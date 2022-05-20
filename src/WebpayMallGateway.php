@@ -41,7 +41,7 @@ class WebpayMallGateway implements PaymentGatewayInterface{
         ]);
         $WMPayment->save();
         $WMPayment->subTransactions()->saveMany($this->getSubTransactions($payment));
-        $payment->beforeProcess($WMPayment);
+        $payment->beforeProcess($paymentModel);
         $response = (new MallTransaction)->create($WMPayment->buy_order, $paymentModel->id, url($this->returnUrl) , $payment->detail );
         $WMPayment->submit_url = $response->getUrl();
         $WMPayment->token_ws = $response->getToken();
@@ -74,7 +74,7 @@ class WebpayMallGateway implements PaymentGatewayInterface{
             $response = (new MallTransaction)->commit($WMPayment->token_ws);
             $this->updateWebpayTransactionData($WMPayment, $response);
             if($response->isApproved()){
-                $WMPayment->payment->recreatePayment()->afterProcess($WMPayment);
+                $WMPayment->payment->recreatePayment()->afterProcess($WMPayment->payment);
             }
         } catch (\Throwable $th) { //Manejar error
             $WMPayment->payment->setStatus('rejected');
