@@ -21,7 +21,7 @@ class WebpayMallGateway implements PaymentGatewayInterface{
         $this->returnUrl = config('webpay.mall.return_url');
         $this->isTesting = config('webpay.mall.debug');
         if(!$this->isTesting){
-            WebpayPlus::configureForProduction( config('webpay.mall.commerce_code'), config('webpay.api_key'));
+            WebpayPlus::configureForProduction( config('webpay.mall.commerce_code'), config('webpay.mall.api_key'));
         }
     }
 
