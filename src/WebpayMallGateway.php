@@ -73,11 +73,11 @@ class WebpayMallGateway implements PaymentGatewayInterface{
         try {
             $response = (new MallTransaction)->commit($WMPayment->token_ws);
             $this->updateWebpayTransactionData($WMPayment, $response);
-            if($response->isApproved()){
-                $WMPayment->payment->recreatePayment()->afterProcess($WMPayment->payment);
-            }
         } catch (\Throwable $th) { //Manejar error
             $WMPayment->payment->setStatus('rejected');
+        }
+        if($response->isApproved()){
+            $WMPayment->payment->recreatePayment()->afterProcess($WMPayment->payment);
         }
     }
 

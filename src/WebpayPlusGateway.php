@@ -66,16 +66,16 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
     private function commitTransaction(WebpayPlusPayment $WPPPayment){
         try {
             $response = (new Transaction)->commit($WPPPayment->token_ws);
-            if($response->getResponseCode() != 0){
-                $WPPPayment->payment->setStatus('rejected');
-            }else {
-                $WPPPayment->payment->setStatus('accepted');
-                $WPPPayment->payment->recreatePayment()->afterProcess($WPPPayment->payment);
-            }
-            $this->saveWebpayTransactionData($WPPPayment, $response);
         } catch (\Throwable $th) { //Manejar error
             $WPPPayment->payment->setStatus('rejected');
         }
+        if($response->getResponseCode() != 0){
+            $WPPPayment->payment->setStatus('rejected');
+        }else {
+            $WPPPayment->payment->setStatus('accepted');
+            $WPPPayment->payment->recreatePayment()->afterProcess($WPPPayment->payment);
+        }
+        $this->saveWebpayTransactionData($WPPPayment, $response);
     }
 
     public function refund($payment, int $amount){
