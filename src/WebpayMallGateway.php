@@ -9,6 +9,7 @@ use Crealab\WebpayPlusPaymentGateway\Models\WebpayMallSubTransaction;
 use Illuminate\Support\Facades\DB;
 use Crealab\PaymentGateway\Payment;
 use Crealab\PaymentGateway\Models\PaymentModel;
+use Transbank\Webpay\WebpayPlus;
 use DateTime;
 use Exception;
 
