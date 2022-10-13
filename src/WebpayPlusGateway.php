@@ -9,7 +9,7 @@ use Exception;
 use DateTime;
 use Illuminate\Support\Facades\DB;
 use Transbank\Webpay\WebpayPlus\Transaction;
-use Transbank\Webpay\WebpayPlus;
+use Transbank\Webpay\WebpayPlus as TransbankWebpayPlus;
 use Crealab\PaymentGateway\Models\PaymentModel;
 
 class WebpayPlusGateway implements PaymentGatewayInterface{
@@ -21,7 +21,7 @@ class WebpayPlusGateway implements PaymentGatewayInterface{
         $this->returnUrl = config('webpay.plus.return_url');
         $this->isTesting = config('webpay.plus.debug');
         if(!$this->isTesting){
-            WebpayPlus::configureForProduction( config('webpay.plus.commerce_code'), config('webpay.plus.api_key'));
+            TransbankWebpayPlus::configureForProduction( config('webpay.plus.commerce_code'), config('webpay.plus.api_key'));
         }
     }
 
